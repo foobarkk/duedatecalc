@@ -43,13 +43,21 @@ test('due time should continue on the next day from 9 if it would overflow 17', 
   expect(diffHours).toBeGreaterThanOrEqual(turnaround + nightTimeInHours)
 })
 
-test('due time should continue on the day after next day from 9 if turnaround overflow is more than 8 hours (and less than 16)', () => {
+test.skip('due time should continue on the day after next day from 9 if turnaround overflow is more than 8 hours (and less than 16)', () => {
   const ticketCreatedAt = new Date('2018-08-22T16:12Z')
   const turnaround = 12
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
   expect(dueTime.getUTCHours()).toBeGreaterThanOrEqual(9)
   expect(diffHours).toBeGreaterThanOrEqual(turnaround + nightTimeInHours)
+})
+
+test('due time should be night time + turnaround overflow time later than ticket creation', () => {
+  const ticketCreatedAt = new Date('2018-08-22T16:12Z')
+  const turnaround = 5
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  expect(diffHours).toBe(turnaround + nightTimeInHours)
 })
 
 test.skip('the time spent with work until due time should not be more than turnaround', () => {

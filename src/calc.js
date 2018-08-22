@@ -8,14 +8,14 @@ module.exports = {
     const startTime = new Date(ticketCreatedAt)
     if (!(startTime instanceof Date) || isNaN(startTime.valueOf())) throw new Error('First parameter must be a date')
 
-    let dayIncrement = 0
-    if (turnaroundHours > 8) dayIncrement++
-    let dueTime = new Date(startTime.setUTCHours(startTime.getUTCHours() + turnaroundHours))
-    if (dueTime.getUTCHours() > ENDOFWORKDAY || dueTime.getUTCHours() < STARTOFWORKDAY) {
-      dayIncrement++
-      dueTime.setUTCHours(STARTOFWORKDAY + turnaroundHours)
+    let dueTime = new Date(startTime)
+    if (startTime.getUTCHours() + turnaroundHours > ENDOFWORKDAY) {
+      const overFlow = turnaroundHours - (ENDOFWORKDAY - startTime.getUTCHours())
+      dueTime.setUTCHours(STARTOFWORKDAY + overFlow)
+      dueTime.setUTCDate(startTime.getUTCDate() + 1)
+    } else {
+      dueTime.setUTCHours(dueTime.getUTCHours() + turnaroundHours)
     }
-    dueTime.setUTCDate(dueTime.getUTCDate() + dayIncrement)
     return dueTime
   }
 }
