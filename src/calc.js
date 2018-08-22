@@ -12,11 +12,15 @@ module.exports = {
     let daysToAdd = 0
     let turnaroundOverFlow = turnaroundHours
     if (turnaroundHours / 8 > 1) {
-      daysToAdd = 1
-      turnaroundOverFlow = turnaroundHours - 8
+      daysToAdd = parseInt(turnaroundHours / 8)
+      turnaroundOverFlow = turnaroundHours - (8 * daysToAdd)
     }
-    if (startTime.getUTCHours() + turnaroundOverFlow > ENDOFWORKDAY) {
-      const overFlow = turnaroundOverFlow - (ENDOFWORKDAY - startTime.getUTCHours())
+    if (startTime.getUTCHours() + turnaroundOverFlow >= ENDOFWORKDAY || turnaroundHours > 8) {
+      let overFlow = turnaroundOverFlow - (ENDOFWORKDAY - startTime.getUTCHours())
+      if (overFlow < 0) {
+        overFlow = turnaroundOverFlow
+        daysToAdd--
+      }
       dueTime.setUTCHours(STARTOFWORKDAY + overFlow)
       dueTime.setUTCDate(startTime.getUTCDate() + 1 + daysToAdd)
     } else {
