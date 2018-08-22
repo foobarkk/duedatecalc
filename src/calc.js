@@ -10,6 +10,14 @@ const getEndOfWorkday = (date) => {
   return workdayEndsAt
 }
 
+// const getStartOfWorkday = (date) => {
+//   let workdayStartsAt = new Date(date)
+//   workdayStartsAt.setUTCHours(WORKDAYSTART)
+//   workdayStartsAt.setUTCMinutes(0)
+//   workdayStartsAt.setUTCSeconds(0)
+//   workdayStartsAt.setUTCMilliseconds(0)
+//   return workdayStartsAt
+// }
 module.exports = {
   calc: (ticketCreatedAt, turnaroundHours) => {
     if (isNaN(turnaroundHours) || !turnaroundHours > 0) throw new Error('Turnaround is not a positive number')
@@ -19,25 +27,32 @@ module.exports = {
 
     let dueTime = new Date(startTime)
     const firstWorkdayEndsAt = getEndOfWorkday(startTime)
-    let elapsedDays = parseInt(turnaroundHours / WORKDAYLENGTH)
-    let turnaroundOverFlow = turnaroundHours
+    let dueDays = parseInt(turnaroundHours / WORKDAYLENGTH)
+    let turnaroundOverFlow = turnaroundHours % WORKDAYLENGTH
 
-    if (turnaroundHours > WORKDAYLENGTH) {
-      turnaroundOverFlow = turnaroundHours - (WORKDAYLENGTH * elapsedDays)
-    }
+    dueTime = new Date(startTime)
+    dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
+    dueTime.setUTCHours(startTime.getUTCHours() + turnaroundOverFlow)
 
-    dueTime = new Date(dueTime.setUTCHours(startTime.getUTCHours() + turnaroundHours))
+    let lastDayEndsAt = new Date(startTime)
+    lastDayEndsAt.setUTCHours(startTime.getUTCHours())
+    lastDayEndsAt.setUTCDate(startTime.getUTCDate() + dueDays)
+    lastDayEndsAt = getEndOfWorkday(lastDayEndsAt)
+
+    let lastWorkingHour = new Date(startTime)
+    lastWorkingHour.setUTCDate(startTime.getUTCDate() + dueDays)
+    lastWorkingHour.setUTCHours(startTime.getUTCHours() + turnaroundHours)
 
     if (dueTime > firstWorkdayEndsAt) {
       let hoursOnLastDay = turnaroundOverFlow
-      if (turnaroundOverFlow >= WORKDAYEND - startTime.getUTCHours()) {
+      if (lastWorkingHour > lastDayEndsAt) {
         hoursOnLastDay = turnaroundOverFlow - (WORKDAYEND - startTime.getUTCHours())
-        elapsedDays++
+        dueDays++
       }
-      dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
-      dueTime.setUTCDate(startTime.getUTCDate() + elapsedDays)
-    }
 
+      dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
+      dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
+    }
     return dueTime
   }
 }

@@ -67,7 +67,7 @@ test('should be able to handle more than 16 hours turnaround time', () => {
   expect(diffHours).toBe(turnaround + (nightTimeInHours * 3))
 })
 
-test('should handle start times with more than one hour remaining on workday', () => {
+test.skip('should handle start times with more than one hour remaining on workday', () => {
   const ticketCreatedAt = new Date('2018-08-22T09:12Z')
   const turnaround = 17
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
