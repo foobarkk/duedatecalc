@@ -1,5 +1,14 @@
-const ENDOFWORKDAY = 17
-const STARTOFWORKDAY = 9
+const WORKDAYEND = 17
+const WORKDAYLENGTH = 8
+const WORKDAYSTART = 9
+const getEndOfWorkday = (date) => {
+  let workdayEndsAt = new Date(date)
+  workdayEndsAt.setUTCHours(WORKDAYEND)
+  workdayEndsAt.setUTCMinutes(0)
+  workdayEndsAt.setUTCSeconds(0)
+  workdayEndsAt.setUTCMilliseconds(0)
+  return workdayEndsAt
+}
 
 module.exports = {
   calc: (ticketCreatedAt, turnaroundHours) => {
@@ -9,23 +18,26 @@ module.exports = {
     if (!(startTime instanceof Date) || isNaN(startTime.valueOf())) throw new Error('First parameter must be a date')
 
     let dueTime = new Date(startTime)
-    let daysToAdd = 0
+    const firstWorkdayEndsAt = getEndOfWorkday(startTime)
+    let elapsedDays = parseInt(turnaroundHours / WORKDAYLENGTH)
     let turnaroundOverFlow = turnaroundHours
-    if (turnaroundHours / 8 > 1) {
-      daysToAdd = parseInt(turnaroundHours / 8)
-      turnaroundOverFlow = turnaroundHours - (8 * daysToAdd)
+
+    if (turnaroundHours > WORKDAYLENGTH) {
+      turnaroundOverFlow = turnaroundHours - (WORKDAYLENGTH * elapsedDays)
     }
-    if (startTime.getUTCHours() + turnaroundOverFlow >= ENDOFWORKDAY || turnaroundHours > 8) {
-      let overFlow = turnaroundOverFlow - (ENDOFWORKDAY - startTime.getUTCHours())
-      if (overFlow < 0) {
-        overFlow = turnaroundOverFlow
-        daysToAdd--
+
+    dueTime = new Date(dueTime.setUTCHours(startTime.getUTCHours() + turnaroundHours))
+
+    if (dueTime > firstWorkdayEndsAt) {
+      let hoursOnLastDay = turnaroundOverFlow
+      if (turnaroundOverFlow >= WORKDAYEND - startTime.getUTCHours()) {
+        hoursOnLastDay = turnaroundOverFlow - (WORKDAYEND - startTime.getUTCHours())
+        elapsedDays++
       }
-      dueTime.setUTCHours(STARTOFWORKDAY + overFlow)
-      dueTime.setUTCDate(startTime.getUTCDate() + 1 + daysToAdd)
-    } else {
-      dueTime.setUTCHours(dueTime.getUTCHours() + turnaroundHours)
+      dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
+      dueTime.setUTCDate(startTime.getUTCDate() + elapsedDays)
     }
+
     return dueTime
   }
 }
