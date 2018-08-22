@@ -52,7 +52,7 @@ test('due time should be night time + turnaround overflow time later than ticket
 })
 
 test('should be able to handle more than 8 hours turnaround time', () => {
-  const ticketCreatedAt = new Date('2018-08-22T16:12Z')
+  const ticketCreatedAt = new Date('2018-08-12T16:12Z')
   const turnaround = 15
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
@@ -60,14 +60,14 @@ test('should be able to handle more than 8 hours turnaround time', () => {
 })
 
 test('should be able to handle more than 16 hours turnaround time', () => {
-  const ticketCreatedAt = new Date('2018-08-22T16:12Z')
+  const ticketCreatedAt = new Date('2018-08-13T16:12Z')
   const turnaround = 17
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
   expect(diffHours).toBe(turnaround + (nightTimeInHours * 3))
 })
 
-test.skip('should handle start times with more than one hour remaining on workday', () => {
+test('should handle start times with more than one hour remaining on workday', () => {
   const ticketCreatedAt = new Date('2018-08-22T09:12Z')
   const turnaround = 17
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
