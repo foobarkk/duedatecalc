@@ -11,7 +11,7 @@ module.exports = {
     let dayIncrement = 0
     if (turnaroundHours > 8) dayIncrement++
     let dueTime = new Date(startTime.setUTCHours(startTime.getUTCHours() + turnaroundHours))
-    if (dueTime.getUTCHours() > ENDOFWORKDAY) {
+    if (dueTime.getUTCHours() > ENDOFWORKDAY || dueTime.getUTCHours() < STARTOFWORKDAY) {
       dayIncrement++
       dueTime.setUTCHours(STARTOFWORKDAY + turnaroundHours)
     }

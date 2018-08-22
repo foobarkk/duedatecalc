@@ -48,5 +48,21 @@ test('due time should continue on the day after next day from 9 if turnaround ov
   const turnaround = 12
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  expect(dueTime.getUTCHours()).toBeGreaterThanOrEqual(9)
   expect(diffHours).toBeGreaterThanOrEqual(turnaround + nightTimeInHours)
+})
+
+test.skip('the time spent with work until due time should not be more than turnaround', () => {
+  const ticketCreatedAt = new Date('2018-08-22T16:12Z')
+  const turnaround = 12
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  expect(diffHours).toBeGreaterThanOrEqual(turnaround + nightTimeInHours)
+})
+test.skip('due time should not be earlier than 9AM', () => {
+  const ticketCreatedAt = new Date('2018-08-22T09:12Z')
+  const turnaround = 16
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  console.log(dueTime)
+  expect(dueTime.getUTCHours()).toBeGreaterThanOrEqual(9)
 })
