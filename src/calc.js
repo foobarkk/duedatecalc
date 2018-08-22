@@ -13,7 +13,6 @@ module.exports = {
     let dueDays = parseInt(turnaroundHours / WORKDAYLENGTH)
     let turnaroundOverFlow = turnaroundHours % WORKDAYLENGTH
 
-    dueTime = new Date(startTime)
     dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
     dueTime.setUTCHours(startTime.getUTCHours() + turnaroundOverFlow)
 
@@ -25,6 +24,7 @@ module.exports = {
 
     dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
     dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
+
     return dueTime
   }
 }
