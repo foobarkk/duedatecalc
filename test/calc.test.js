@@ -81,8 +81,6 @@ test('should skip weekend days if due time is on Saturday or Sunday', () => {
   const turnaround = 2
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
-  const expectedDueTime = new Date('2018-08-27T10:12Z')
-  console.log(expectedDueTime, dueTime)
   expect(diffHours).toBe(turnaround + (weekendHours * 2) + nightTimeInHours)
 })
 
@@ -91,7 +89,13 @@ test('should skip two weekends', () => {
   const turnaround = 66
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
-  const expectedDueTime = new Date('2018-09-04T10:12Z')
-  console.log(expectedDueTime, dueTime)
   expect(diffHours).toBe(turnaround + (weekendHours * 4) + nightTimeInHours * 9)
+})
+
+test('should skip more than two weekends', () => {
+  const ticketCreatedAt = new Date('2018-08-22T09:12Z')
+  const turnaround = 105
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  expect(diffHours).toBe(turnaround + (weekendHours * 6) + nightTimeInHours * 13)
 })

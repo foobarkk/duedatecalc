@@ -14,23 +14,20 @@ module.exports = {
     let dueWeeks = parseInt(turnaroundHours / 40)
     let turnaroundOverFlow = turnaroundHours % WORKDAYLENGTH
 
-    dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
-    dueTime.setUTCHours(startTime.getUTCHours() + turnaroundOverFlow)
-
     let hoursOnLastDay = turnaroundOverFlow
     if (turnaroundOverFlow >= WORKDAYEND - startTime.getUTCHours()) {
       hoursOnLastDay = turnaroundOverFlow - (WORKDAYEND - startTime.getUTCHours())
       dueDays++
     }
-
     dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
     dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
+
     if (dueTime.getUTCDay() > 5) {
       dueTime.setUTCDate(startTime.getUTCDate() + 2 + dueDays)
     }
+
     if (dueWeeks > 0) {
-      console.log(dueWeeks, dueTime.getUTCDate())
-      dueTime.setUTCDate(dueTime.getUTCDate() + (dueWeeks * 3) + 1)
+      dueTime.setUTCDate(dueTime.getUTCDate() + (dueWeeks * 2) + 2)
     }
 
     return dueTime
