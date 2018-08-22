@@ -15,6 +15,11 @@ test('should throw error when second parameter couldn`t is not a number', () => 
   expect(() => calculator.calc('2012-12-12T11:32:00Z', 'korte')).toThrow()
 })
 
-test('should throw error when second parameter couldn`t be translated as positive, not zero number', () => {
+test('should throw error when second parameter couldn`t be translated as positive, non zero number', () => {
   expect(() => calculator.calc('2012-12-12T11:32:00Z', 0)).toThrow()
+})
+
+test('should return some date with correct parameters', () => {
+  const dueTime = calculator.calc('2012-12-12T11:32:00Z', 2)
+  expect(dueTime).toBeInstanceOf(Date)
 })

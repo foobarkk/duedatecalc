@@ -4,6 +4,6 @@ module.exports = {
 
     const startTime = new Date(ticketCreatedAt)
     if (!(startTime instanceof Date) || isNaN(startTime.valueOf())) throw new Error('First parameter must be a date')
-    return 'OK'
+    return new Date()
   }
 }
