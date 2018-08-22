@@ -1,3 +1,6 @@
+const ENDOFWORKDAY = 17
+const STARTOFWORKDAY = 9
+
 module.exports = {
   calc: (ticketCreatedAt, turnaroundHours) => {
     if (isNaN(turnaroundHours) || !turnaroundHours > 0) throw new Error('Turnaround is not a positive number')
@@ -5,7 +8,11 @@ module.exports = {
     const startTime = new Date(ticketCreatedAt)
     if (!(startTime instanceof Date) || isNaN(startTime.valueOf())) throw new Error('First parameter must be a date')
 
-    const dueTime = new Date(startTime.setHours(startTime.getHours() + turnaroundHours))
+    let dueTime = new Date(startTime.setUTCHours(startTime.getUTCHours() + turnaroundHours))
+    if (dueTime.getUTCHours() > ENDOFWORKDAY) {
+      dueTime.setUTCDate(dueTime.getUTCDate() + 1)
+      dueTime.setUTCHours(STARTOFWORKDAY + turnaroundHours)
+    }
     return dueTime
   }
 }
