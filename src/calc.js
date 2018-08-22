@@ -22,8 +22,11 @@ module.exports = {
       dueDays++
     }
 
-    dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
     dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
+    dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
+    if (dueTime.getUTCDay() > 5) {
+      dueTime.setUTCDate(startTime.getUTCDate() + 2 + dueDays)
+    }
 
     return dueTime
   }

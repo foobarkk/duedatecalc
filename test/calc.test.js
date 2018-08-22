@@ -5,6 +5,7 @@ const calculator = require('../src/calc')
 
 const dateDiffInHours = (date1, date2) => (date1.valueOf() - date2.valueOf()) / 60 / 60 / 1000
 const nightTimeInHours = 16
+const weekendHours = 24
 
 test('should throw error when only one parameter is given', () => {
   expect(() => calculator.calc('alma')).toThrow()
@@ -73,4 +74,14 @@ test('should handle start times with more than one hour remaining on workday', (
   const dueTime = calculator.calc(ticketCreatedAt, turnaround)
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
   expect(diffHours).toBe(turnaround + (nightTimeInHours * 2))
+})
+
+test('should skip weekend days if due time is on Saturday or Sunday', () => {
+  const ticketCreatedAt = new Date('2018-08-24T16:12Z')
+  const turnaround = 2
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  const expectedDueTime = new Date('2018-08-27T10:12Z')
+  console.log(expectedDueTime, dueTime)
+  expect(diffHours).toBe(turnaround + (weekendHours * 2) + nightTimeInHours)
 })
