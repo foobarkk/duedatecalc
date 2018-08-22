@@ -9,10 +9,16 @@ module.exports = {
     if (!(startTime instanceof Date) || isNaN(startTime.valueOf())) throw new Error('First parameter must be a date')
 
     let dueTime = new Date(startTime)
-    if (startTime.getUTCHours() + turnaroundHours > ENDOFWORKDAY) {
-      const overFlow = turnaroundHours - (ENDOFWORKDAY - startTime.getUTCHours())
+    let daysToAdd = 0
+    let turnaroundOverFlow = turnaroundHours
+    if (turnaroundHours / 8 > 1) {
+      daysToAdd = 1
+      turnaroundOverFlow = turnaroundHours - 8
+    }
+    if (startTime.getUTCHours() + turnaroundOverFlow > ENDOFWORKDAY) {
+      const overFlow = turnaroundOverFlow - (ENDOFWORKDAY - startTime.getUTCHours())
       dueTime.setUTCHours(STARTOFWORKDAY + overFlow)
-      dueTime.setUTCDate(startTime.getUTCDate() + 1)
+      dueTime.setUTCDate(startTime.getUTCDate() + 1 + daysToAdd)
     } else {
       dueTime.setUTCHours(dueTime.getUTCHours() + turnaroundHours)
     }
