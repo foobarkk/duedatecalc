@@ -1,7 +1,7 @@
 'use strict'
 /* global expect, test */
 
-const calculator = require('../src/calculator')
+const calculator = require('../lib/calculator')
 
 const dateDiffInHours = (date1, date2) => (date1.valueOf() - date2.valueOf()) / 60 / 60 / 1000
 const nightTimeInHours = 16
@@ -24,7 +24,7 @@ test('should throw error when second parameter couldn`t be translated as positiv
 })
 
 test('should return some date with correct parameters', () => {
-  const dueTime = calculator.getDueTime('2012-12-12T11:32:00Z', 2)
+  const dueTime = calculator.getDueTime(new Date('2012-12-12T11:32:00Z'), 2)
   expect(dueTime).toBeInstanceOf(Date)
 })
 
