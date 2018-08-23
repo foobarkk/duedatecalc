@@ -99,3 +99,19 @@ test('should skip more than two weekends', () => {
   const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
   expect(diffHours).toBe(turnaround + (weekendHours * 6) + nightTimeInHours * 13)
 })
+
+test('should skip more than two weekends with friday ending', () => {
+  const ticketCreatedAt = new Date('2018-08-22T09:12Z')
+  const turnaround = 96
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  expect(diffHours).toBe(turnaround + (weekendHours * 4) + nightTimeInHours * 12)
+})
+
+test('should skip more than two weekends with friday ending2', () => {
+  const ticketCreatedAt = new Date('2018-08-22T16:12Z')
+  const turnaround = 56
+  const dueTime = calculator.calc(ticketCreatedAt, turnaround)
+  const diffHours = dateDiffInHours(dueTime, ticketCreatedAt)
+  expect(diffHours).toBe(turnaround + (weekendHours * 2) + nightTimeInHours * 7)
+})
