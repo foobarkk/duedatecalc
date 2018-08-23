@@ -1,0 +1,6 @@
+module.exports = {
+  WORKDAYEND: 17,
+  WORKDAYLENGTH: 8,
+  WORKDAYSTART: 9,
+  WEEKLENGTH: 40
+}
