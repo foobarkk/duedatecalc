@@ -1,6 +1,45 @@
 const WORKDAYEND = 17
 const WORKDAYLENGTH = 8
 const WORKDAYSTART = 9
+const WEEKLENGTH = 40
+const convertToWorkDay = (date) => {
+  const isOnWeekend = date.getUTCDay() === 0 || date.getUTCDay() === 6
+  let daysUntilMonday = 2
+  if (date.getUTCDay() === 0) {
+    daysUntilMonday = 1
+  }
+  if (isOnWeekend) {
+    date.setUTCDate(date.getUTCDate() + daysUntilMonday)
+  }
+  return date
+}
+const endsAfterWorkingHours = (turnaroundOverFlow, startTime) => {
+  return turnaroundOverFlow >= WORKDAYEND - startTime.getUTCHours()
+}
+const getHoursOnLastDay = (startTime, turnaroundOverFlow) => {
+  let hoursOnLastDay = turnaroundOverFlow
+  if (turnaroundOverFlow === 0) {
+    hoursOnLastDay = startTime.getUTCHours() - WORKDAYSTART
+  }
+  if (endsAfterWorkingHours(turnaroundOverFlow, startTime)) {
+    hoursOnLastDay = turnaroundOverFlow - (WORKDAYEND - startTime.getUTCHours())
+  }
+  return hoursOnLastDay
+}
+const getTurnaroundOverFlow = (turnaroundHours) => turnaroundHours % WORKDAYLENGTH
+const getTurnaroundWeeks = (turnaroundHours) => parseInt(turnaroundHours / WEEKLENGTH)
+const getAboveWeekDays = (turnaroundHours, startTime) => {
+  const turnaroundOverFlow = getTurnaroundOverFlow(turnaroundHours)
+  const turnaroundWeeks = getTurnaroundWeeks(turnaroundHours)
+  let extraDays = 0
+  if (turnaroundWeeks > 0 && turnaroundOverFlow > 0) {
+    if (startTime.getUTCHours() !== WORKDAYSTART || startTime.getUTCMinutes() !== 0) {
+      extraDays = 2
+    }
+  }
+  return extraDays
+}
+const getInitialDueDays = (turnaroundHours) => parseInt(turnaroundHours / WORKDAYLENGTH) + getTurnaroundWeeks(turnaroundHours) * 2
 
 module.exports = {
   calc: (ticketCreatedAt, turnaroundHours) => {
@@ -10,31 +49,22 @@ module.exports = {
     if (!(startTime instanceof Date) || isNaN(startTime.valueOf())) throw new Error('First parameter must be a date')
 
     let dueTime = new Date(startTime)
-    let dueWeeks = parseInt(turnaroundHours / 40)
-    let dueDays = parseInt(turnaroundHours / WORKDAYLENGTH) + (dueWeeks * 2)
-    let turnaroundOverFlow = turnaroundHours % WORKDAYLENGTH
+    let dueDays = getInitialDueDays(turnaroundHours)
 
-    let hoursOnLastDay = turnaroundOverFlow
-    if (hoursOnLastDay === 0) {
-      hoursOnLastDay = startTime.getUTCHours() - WORKDAYSTART
-    }
-    if (turnaroundOverFlow >= WORKDAYEND - startTime.getUTCHours()) {
-      hoursOnLastDay = turnaroundOverFlow - (WORKDAYEND - startTime.getUTCHours())
+    const turnaroundOverFlow = getTurnaroundOverFlow(turnaroundHours)
+
+    let hoursOnLastDay = getHoursOnLastDay(startTime, turnaroundOverFlow)
+    if (endsAfterWorkingHours(turnaroundOverFlow, startTime)) {
       dueDays++
     }
 
     dueTime.setUTCDate(startTime.getUTCDate() + dueDays)
     dueTime.setUTCHours(WORKDAYSTART + hoursOnLastDay)
 
-    if (dueWeeks > 0) {
-      if (turnaroundHours % WORKDAYLENGTH > 0) {
-        dueTime.setUTCDate(dueTime.getUTCDate() + 2)
-      }
-    }
+    const extraDays = getAboveWeekDays(turnaroundHours, startTime)
+    dueTime.setUTCDate(dueTime.getUTCDate() + extraDays)
 
-    if (dueTime.getUTCDay() > 5) {
-      dueTime.setUTCDate(dueTime.getUTCDate() + 2)
-    }
+    dueTime = convertToWorkDay(dueTime)
 
     return dueTime
   }
